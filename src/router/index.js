@@ -1,6 +1,6 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import Home from "../views/Home.vue";
+
 import store from "../store/index.js";
 import Login from "../views/Login.vue";
 import ProcessingOrder from "../views/ProcessingOrder.vue";
@@ -12,7 +12,6 @@ const routes = [
   {
     path: "/",
     name: "Home",
-    component: Home,
     redirect: { name: "processingOrder" },
   },
   {

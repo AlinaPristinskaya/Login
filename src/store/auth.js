@@ -1,5 +1,5 @@
 import axios from "../utils/axios";
-
+import { loginUser } from "../services/auth.service";
 export default {
   state: {
     status: "",
@@ -30,44 +30,28 @@ export default {
     },
   },
   actions: {
-    login({ commit }, user) {
+    async login({ commit }, payload) {
       commit("logout");
-      return new Promise((resolve, reject) => {
-        console.log("bodyFormData");
-        axios({
-          method: "POST",
-
-          url: "login.php",
-          data: new FormData(user),
-        })
-          .then((resp) => {
-            if (resp.data.error) {
-              const error = resp.data.error;
-              commit("auth_error", {
-                error: error,
-              });
-            } else {
-              const token = resp.data.data[2].sessionId;
-              const user = resp.data.data[0].userId;
-              const role = resp.data.data[1].role;
-              const success = resp.data.success;
-              localStorage.setItem("token", token);
-              commit("auth_success", {
-                token: token,
-                role: role,
-                user: user,
-                success: success,
-              });
-            }
-            resolve(resp);
-          })
-          .catch((err) => {
-            console.log("1223");
-            //обработка ошибки
-            localStorage.removeItem("token");
-            reject(err);
-          });
-      });
+      const { data } = await loginUser(payload);
+      console.log(data);
+      if (data.error) {
+        const error = data.error;
+        commit("auth_error", {
+          error: error,
+        });
+      } else {
+        const token = data.data[2].sessionId;
+        const user = data.data[0].userId;
+        const role = data.data[1].role;
+        const success = data.success;
+        localStorage.setItem("token", token);
+        commit("auth_success", {
+          token: token,
+          role: role,
+          user: user,
+          success: success,
+        });
+      }
     },
 
     async logout({ commit, state }) {

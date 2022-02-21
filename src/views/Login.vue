@@ -45,36 +45,32 @@ export default {
       },
     };
   },
+
   methods: {
-    submitLogin(formName) {
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
+    async submitLogin() {
+      const { form } = this.$refs;
+      const isFormValidate = form.validate();
+      if (isFormValidate) {
+        try {
           this.loading = true;
           const form = document.querySelector("#form");
           console.log("form", form);
-          this.$store
-            .dispatch("login", form)
-            .then(() => {
-              if (!this.$store.state.auth.error) {
-                this.$router.push("/processingOrder");
-              }
-            })
-            .catch((err) => {
-              console.log(err);
-            })
-            .finally(() => {
-              this.loading = false;
-            });
-        } else {
-          this.$message({
-            message: this.$t(
-              "Please, fill out the form correctly before submitting"
-            ),
-            type: "warning",
-          });
-          return false;
+          await this.$store.dispatch("login", form);
+          this.$router.push({ name: "/processingOrder" });
+        } catch (error) {
+          console.log(error);
+        } finally {
+          this.loading = false;
         }
-      });
+      } else {
+        this.$message({
+          message: this.$t(
+            "Please, fill out the form correctly before submitting"
+          ),
+          type: "warning",
+        });
+        return false;
+      }
     },
   },
 };
